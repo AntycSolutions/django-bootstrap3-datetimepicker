@@ -91,7 +91,10 @@ class DateTimePicker(DateTimeInput):
         <script>
             (function(window) {
                 var callback = function() {
-                    $(function(){$("#%(picker_id)s:has(input:not([readonly],[disabled]))").datetimepicker(%(options)s);});
+                    $(function(){
+                        $("#%(picker_id)s:has(input:not([readonly],[disabled]))").datetimepicker(%(options)s);
+                        $("#%(input_id)s:not([readonly],[disabled])").datetimepicker(%(options)s);
+                    });
                 };
                 if(window.addEventListener)
                     window.addEventListener("load", callback, false);
@@ -143,7 +146,8 @@ class DateTimePicker(DateTimeInput):
         if self.options:
             self.options['language'] = translation.get_language()
             js = self.js_template % dict(picker_id=picker_id,
-                                         options=json.dumps(self.options or {}))
+                                         options=json.dumps(self.options or {}),
+                                         input_id=conditional_escape(input_attrs.get('id')))
         else:
             js = ''
         return mark_safe(force_text(html + js))
