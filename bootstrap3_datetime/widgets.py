@@ -47,8 +47,8 @@ class DateTimePicker(DateTimeInput):
                     if lang not in ('en', 'en-us'):
                         yield 'bootstrap3_datetime/js/locales/bootstrap-datetimepicker.%s.js' % (lang)
 
-        js = JsFiles()
-        css = {'all': ('bootstrap3_datetime/css/bootstrap-datetimepicker.min.css',), }
+        # js = JsFiles()
+        # css = {'all': ('bootstrap3_datetime/css/bootstrap-datetimepicker.min.css',), }
 
     # http://momentjs.com/docs/#/parsing/string-format/
     # http://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
@@ -124,7 +124,7 @@ class DateTimePicker(DateTimeInput):
             if format and not self.options.get('format') and not self.attrs.get('date-format'):
                 self.options['format'] = self.conv_datetime_format_py2js(format)
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         if value is None:
             value = ''
         try:
@@ -137,7 +137,7 @@ class DateTimePicker(DateTimeInput):
             )
         if value != '':
             # Only add the 'value' attribute if a value is non-empty.
-            input_attrs['value'] = force_text(self._format_value(value))
+            input_attrs['value'] = force_text(self.format_value(value))
         input_attrs = dict([(key, conditional_escape(val)) for key, val in input_attrs.items()])  # python2.6 compatible
         if not self.picker_id:
              self.picker_id = (input_attrs.get('id', '') +
@@ -147,6 +147,7 @@ class DateTimePicker(DateTimeInput):
         div_attrs = dict(
             [(key, conditional_escape(val)) for key, val in self.div_attrs.items()])  # python2.6 compatible
         icon_attrs = dict([(key, conditional_escape(val)) for key, val in self.icon_attrs.items()])
+        input_attrs.update(self.attrs)
         html = self.html_template % dict(div_attrs=flatatt(div_attrs),
                                          input_attrs=flatatt(input_attrs),
                                          icon_attrs=flatatt(icon_attrs))
@@ -157,4 +158,5 @@ class DateTimePicker(DateTimeInput):
                                          input_id=conditional_escape(input_attrs.get('id')))
         else:
             js = ''
+        js = ''  # we'll do it manually
         return mark_safe(force_text(html + js))
